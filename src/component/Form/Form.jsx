@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { HiOutlineClipboardCopy, HiOutlineTrash } from 'react-icons/hi';
+import Checkbox from './Checkbox';
 
-function Form() {
+function Form({ leftLabels, rightLabels , subleftLabels ,subrightLabels }) {
   const [questions, setQuestions] = useState([{ id: 1, text: '', isChecked: false, type: 'checkbox', subQuestions: [] }]);
+
 
   const addQuestion = () => {
     const newId = questions.length + 1;
@@ -115,12 +117,12 @@ function Form() {
 
   return (
     <div style={{ backgroundColor: '#E2EEE0', padding: '10px', borderRadius: '10px', width: '900px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ backgroundColor: '#F2E10D', height: '3rem', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 10px' }}>
+      <div style={{ backgroundColor: '#EAB308', height: '3rem', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 10px' }}>
         <h2 className="font-bold text-2xl mb-4 underline">Checklist</h2>
       </div>
       <form onSubmit={handleSubmit} style={{ padding: '20px', width: '100%' }}>
         {questions.map((question, index) => (
-          <div key={question.id} className="mb-4">
+          <div key={question.id} className="mb-4 bg-[#01A8F4] p-4">
             <label htmlFor={`question${question.id}`}>Question {question.id}:</label>
             <div className="flex items-center">
               <input
@@ -167,6 +169,19 @@ function Form() {
                 ))}
               </div>
             </div>
+
+            <div className="grid grid-cols-2 gap-4 relative left-[80px] pt-4">
+            <div className="flex flex-col">
+            {leftLabels.map((label, index) => (
+             <Checkbox key={index} label={label} />
+        ))}
+           </div>
+         <div className="flex flex-col relative left-[60px]">
+          {rightLabels.map((label, index) => (
+          <Checkbox key={index} label={label} />
+        ))}
+      </div>
+    </div>   
             
             {question.subQuestions.map((subQuestion) => (
               <div key={subQuestion.id} className="ml-6 mt-2">
@@ -201,8 +216,10 @@ function Form() {
                     <option value="text">Text</option>
                   </select>
                 </div>
-
+                
+                
                 <div class="flex justify-between">
+                    
                   <div class="flex flex-col">
                     {question.additionalOptions && question.additionalOptions.map((option, idx) => (
                       <div key={idx} className="mb-4 px-20">
@@ -214,9 +231,25 @@ function Form() {
                         <label htmlFor={`sub-option${idx}-${subQuestion.id}`} className="ml-2">{option}</label>
                       </div>
                     ))}
+
                   </div>
+                  
                 </div>
+                
+            <div className="grid grid-cols-2 gap-4 relative left-[80px] pt-4">
+            <div className="flex flex-col">
+            {leftLabels.map((label, index) => (
+             <Checkbox key={index} label={label} />
+        ))}
+           </div>
+         <div className="flex flex-col relative left-[60px] ">
+          {rightLabels.map((label, index) => (
+          <Checkbox key={index} label={label} />
+        ))}
+      </div>
+    </div> 
               </div>
+              
             ))}
             
             {index === questions.length - 1 && (
