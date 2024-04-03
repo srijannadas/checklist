@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HiOutlineClipboardCopy, HiOutlineTrash } from 'react-icons/hi'; // Importing copy and delete icons from React Icons
+import { HiOutlineClipboardCopy, HiOutlineTrash } from 'react-icons/hi';
 
 function Form() {
   const [questions, setQuestions] = useState([{ id: 1, text: '', isChecked: false, type: 'checkbox', subQuestions: [] }]);
@@ -19,7 +19,7 @@ function Form() {
         ...parentQuestion,
         subQuestions: [
           ...parentQuestion.subQuestions,
-          { id: newSubQuestionId, text: '', isChecked: false, type: 'checkbox' } // Added type for subquestion
+          { id: newSubQuestionId, text: '', isChecked: false, type: 'checkbox' }
         ]
       };
       setQuestions(updatedQuestions);
@@ -84,6 +84,14 @@ function Form() {
 
   const handleTypeChange = (e, questionId, subQuestionId = null) => {
     const selectedType = e.target.value;
+    let additionalOptions = [];
+
+    if (selectedType === "radio" || selectedType === "checkbox") {
+      additionalOptions = ["Pass", "Fail", "Flag"];
+    } else if (selectedType === "text") {
+      additionalOptions = ["Option1", "Option2", "Option3"];
+    }
+
     const updatedQuestions = questions.map((question) => {
       if (question.id === questionId) {
         if (subQuestionId !== null) {
@@ -92,10 +100,6 @@ function Form() {
           );
           return { ...question, subQuestions: updatedSubQuestions };
         } else {
-          let additionalOptions = [];
-          if (selectedType === "radio" || selectedType === "checkbox") {
-            additionalOptions = ["Pass", "Fail", "Flag"];
-          }
           return { ...question, type: selectedType, additionalOptions: additionalOptions };
         }
       }
@@ -103,11 +107,9 @@ function Form() {
     });
     setQuestions(updatedQuestions);
   };
-  
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
     console.log('Form submitted');
   };
 
@@ -116,7 +118,6 @@ function Form() {
       <div style={{ backgroundColor: '#F2E10D', height: '3rem', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 10px' }}>
         <h2 className="font-bold text-2xl mb-4 underline">Checklist</h2>
       </div>
-      {/* Form */}
       <form onSubmit={handleSubmit} style={{ padding: '20px', width: '100%' }}>
         {questions.map((question, index) => (
           <div key={question.id} className="mb-4">
@@ -129,7 +130,6 @@ function Form() {
                 onChange={(e) => handleInputChange(e, question.id)}
                 className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
-              {/* Copy and Delete Icons */}
               <button onClick={() => handleCopy(question.id)} className="ml-2">
                 <HiOutlineClipboardCopy className="w-6 h-6 inline-block" />
               </button>
@@ -138,7 +138,6 @@ function Form() {
               </button>
             </div>
     
-            {/* Type Dropdown */}
             <div className="mt-2">
               <label htmlFor={`type${question.id}`}>Select Type:</label>
               <select
@@ -150,38 +149,25 @@ function Form() {
                 <option value="/">Choose</option>
                 <option value="checkbox">Checkbox</option>
                 <option value="radio">Radio</option>
+                <option value="text">Text</option>
               </select>
             </div>
             
-            {/* Additional Options */}
             <div class="flex justify-between">
               <div class="flex flex-col">
-                <div className="mb-4 px-20">
-                  <input type="checkbox" id={`basic-info1-${question.id}`} name={`basic-info1-${question.id}`} />
-                  <label htmlFor={`basic-info1-${question.id}`}className="ml-2">Comment should be shown</label>
-                </div>
-                <div class="mb-4">
-                  <input type="checkbox" id={`basic-info2-${question.id}`} name={`basic-info2-${question.id}`} />
-                  <label htmlFor={`basic-info2-${question.id}`}className="ml-2">Include score</label>
-                </div>
-                <div class="mb-4">
-                  <input type="checkbox" id={`basic-info3-${question.id}`} name={`basic-info3-${question.id}`} />
-                  <label htmlFor={`basic-info3-${question.id}`}className="ml-2">Take photo from camera</label>
-                </div>
-              </div>
-              <div class="flex flex-col">
-                <div class="mb-4 px-20">
-                  <input type="checkbox" id={`basic-info4-${question.id}`} name={`basic-info4-${question.id}`} />
-                  <label htmlFor={`basic-info4-${question.id}`}className="ml-2">Is the question marked as critical</label>
-                </div>
-                <div class="mb-4 px-20">
-                  <input type="checkbox" id={`basic-info5-${question.id}`} name={`basic-info5-${question.id}`} />
-                  <label htmlFor={`basic-info5-${question.id}`}className="ml-2">Is mandatory</label>
-                </div>
+                {question.additionalOptions && question.additionalOptions.map((option, idx) => (
+                  <div key={idx} className="mb-4 px-20">
+                    <input
+                      type={question.type === 'radio' ? 'radio' : 'checkbox'}
+                      id={`option${idx}-${question.id}`}
+                      name={`option${idx}-${question.id}`}
+                    />
+                    <label htmlFor={`option${idx}-${question.id}`} className="ml-2">{option}</label>
+                  </div>
+                ))}
               </div>
             </div>
-
-            {/* Subquestions */}
+            
             {question.subQuestions.map((subQuestion) => (
               <div key={subQuestion.id} className="ml-6 mt-2">
                 <label htmlFor={`subquestion${subQuestion.id}`}>Subquestion {subQuestion.id}:</label>
@@ -193,7 +179,6 @@ function Form() {
                     onChange={(e) => handleInputChange(e, question.id, subQuestion.id)}
                     className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   />
-                  {/* Copy and Delete Icons */}
                   <button onClick={() => handleCopy(subQuestion.id)} className="ml-2">
                     <HiOutlineClipboardCopy className="w-6 h-6 inline-block" />
                   </button>
@@ -202,7 +187,6 @@ function Form() {
                   </button>
                 </div>
     
-                {/* Type Dropdown */}
                 <div className="mt-2">
                   <label htmlFor={`type${subQuestion.id}`}>Select Type:</label>
                   <select
@@ -214,40 +198,27 @@ function Form() {
                     <option value="/">Choose</option>
                     <option value="checkbox">Checkbox</option>
                     <option value="radio">Radio</option>
+                    <option value="text">Text</option>
                   </select>
                 </div>
 
-                {/* Additional Options */}
                 <div class="flex justify-between">
                   <div class="flex flex-col">
-                    <div className="mb-4 px-20">
-                      <input type="checkbox" id={`sub-basic-info1-${subQuestion.id}`} name={`sub-basic-info1-${subQuestion.id}`} />
-                      <label htmlFor={`sub-basic-info1-${subQuestion.id}`}className="ml-2">Comment should be shown</label>
-                    </div>
-                    <div class="mb-4">
-                      <input type="checkbox" id={`sub-basic-info2-${subQuestion.id}`} name={`sub-basic-info2-${subQuestion.id}`} />
-                      <label htmlFor={`sub-basic-info2-${subQuestion.id}`}className="ml-2">Include score</label>
-                    </div>
-                    <div class="mb-4">
-                      <input type="checkbox" id={`sub-basic-info3-${subQuestion.id}`} name={`sub-basic-info3-${subQuestion.id}`} />
-                      <label htmlFor={`sub-basic-info3-${subQuestion.id}`}className="ml-2">Take photo from camera</label>
-                    </div>
-                  </div>
-                  <div class="flex flex-col">
-                    <div class="mb-4 px-20">
-                      <input type="checkbox" id={`sub-basic-info4-${subQuestion.id}`} name={`sub-basic-info4-${subQuestion.id}`} />
-                      <label htmlFor={`sub-basic-info4-${subQuestion.id}`}className="ml-2">Is the question marked as critical</label>
-                    </div>
-                    <div class="mb-4 px-20">
-                      <input type="checkbox" id={`sub-basic-info5-${subQuestion.id}`} name={`sub-basic-info5-${subQuestion.id}`} />
-                      <label htmlFor={`sub-basic-info5-${subQuestion.id}`}className="ml-2">Is mandatory</label>
-                    </div>
+                    {question.additionalOptions && question.additionalOptions.map((option, idx) => (
+                      <div key={idx} className="mb-4 px-20">
+                        <input
+                          type={question.type === 'radio' ? 'radio' : 'checkbox'}
+                          id={`sub-option${idx}-${subQuestion.id}`}
+                          name={`sub-option${idx}-${subQuestion.id}`}
+                        />
+                        <label htmlFor={`sub-option${idx}-${subQuestion.id}`} className="ml-2">{option}</label>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
             ))}
             
-            {/* Add Subquestion Button */}
             {index === questions.length - 1 && (
               <div>
                 <button onClick={() => addSubQuestion(question.id)} className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mt-2 mr-2">
@@ -260,7 +231,8 @@ function Form() {
             )}
           </div>
         ))}
-        {/* Submit Button */}
+
+        
         <button type="submit" className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Submit
         </button>
